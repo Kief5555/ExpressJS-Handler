@@ -11,6 +11,7 @@ module.exports = {
    * @param {import('sqlite3').Database} db - The database connection object.
    */
   async handle(req, res, db) {
+    db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)");
     //Authorization
     app.post("/signup", (req, res) => {
         const username = req.body.username;
