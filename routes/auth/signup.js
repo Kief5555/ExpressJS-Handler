@@ -11,25 +11,40 @@ module.exports = {
    * @param {import('sqlite3').Database} db - The database connection object.
    */
   async handle(req, res, db) {
-    db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)");
-    //Authorization
-    app.post("/signup", (req, res) => {
-        const username = req.body.username;
-        const password = req.body.password;
-      
-        db.run(
-          "INSERT INTO users (username, password) VALUES (?, ?)",
-          [username, password],
-          (err) => {
-            if (err) {
-              res.status(500).json({ message: "User already exists" });
-            } else {
-              res.cookie("username", username);
-              res.cookie("password", password);
-              res.status(200).json({ message: "User created" });
-            }
+    await db.run(
+      "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)"
+    );
+
+    // Authorization
+    const username = req.body.username;
+    const password = req.body.password;
+
+    // Check if the user already exists
+    try {
+      const userExists = await db.get(
+        "SELECT * FROM users WHERE username = ?",
+        [username]
+      );
+    } catch (err) {
+      res.status(500).json({ message: "Failed to create user" });
+    }
+
+    if (userExists) {
+      res.status(409).json({ message: "User already exists" });
+    } else {
+      await db.run(
+        "INSERT INTO users (username, password) VALUES (?, ?)",
+        [username, password],
+        (err) => {
+          if (err) {
+            res.status(500).json({ message: "Failed to create user" });
+          } else {
+            res.cookie("username", username);
+            res.cookie("password", password);
+            res.status(200).json({ message: "User created" });
           }
-        );
-      });
+        }
+      );
+    }
   },
 };
