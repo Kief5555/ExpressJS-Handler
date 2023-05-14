@@ -8,7 +8,7 @@ Its like a template and also a handler, I made it for no reason :)
 3. `node index.js`
 
 
-#Features
+### Features
 - Directorys
 - DB
 - Error handler
