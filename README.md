@@ -10,5 +10,6 @@ Its like a template and also a handler, I made it for no reason :)
 
 ### Features
 - Directorys
-- DB
+- DB (SQLITE)
 - Error handler
+
